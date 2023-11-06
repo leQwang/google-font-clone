@@ -14,7 +14,7 @@ type FontItem = {
 	subsets: string[];
 	version: string;
 	lastModified: string;
-	files: Record<string, string>;	
+	files: Record<string, string>;
 	category: string;
 	kind: string;
 	menu: string;
@@ -32,12 +32,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	const data = await res.json();
 
 	return {
-		// paths: [
-		//   { params: { fontFamily: "ABeeZee" } },
-		//   { params: { fontFamily: "Abel" } },
-		//   { params: { fontFamily: "Abhaya Libre" } },
-		//   { params: { fontFamily: "Abril Fatface" } },
-		// ],
 		paths: data.items.map((fontItem: FontItem) => ({
 			params: { fontFamily: fontItem.family },
 		})),
@@ -49,10 +43,12 @@ export const getStaticProps: GetStaticProps<FontItemList> = async (
 	context: GetStaticPropsContext
 ) => {
 	// console.log("\nGET STATIC PROPS", context.params?.fontFamily)
-	const family = context.params?.fontFamily;
+	const family = String(context.params?.fontFamily);
 
 	const res = await fetch(
-		`https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyAE4f_rHRd2uqlo09qtr2f6DXVB1vNIvI4&family=${family}`
+		`https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyAE4f_rHRd2uqlo09qtr2f6DXVB1vNIvI4&family=${concatAndReplaceSpace(
+			family
+		)}`
 	);
 	const data = await res.json();
 	return {
@@ -62,60 +58,77 @@ export const getStaticProps: GetStaticProps<FontItemList> = async (
 	};
 };
 
-// async function loadFont(
-// 	fontName: string,
-// 	setFontName: (name: string) => void
-// ): Promise<void> {
-// 	const link = document.createElement("link");
-// 	link.rel = "stylesheet";
-// 	link.href = `https://fonts.googleapis.com/css?family=${fontName}`;
-// 	document.head.appendChild(link);
-
-// 	return new Promise<void>((resolve) => {
-// 		link.onload = () => {
-// 			setFontName(fontName);
-// 			resolve();
-// 		};
-// 	});
-// }
-
-// export interface FontProps {}
+function concatAndReplaceSpace(inputString: string) {
+	let modifiedString = inputString.replace(/ /g, "%20");
+	return modifiedString;
+}
 
 export default function Font(fontFamily: FontItemList) {
-	// const [fontName, setFontName] = useState(''); // Initialize with an empty string
+	const fontData = fontFamily.fontsList[0];
+	const sampleText = "Hello New Font";
 
-	// useEffect(() => {
-	//   const fontToLoad = fontFamily.fontsList[0]?.family;
+	const fontFiles = fontData.files;
 
-	//   async function initializeFont() {
-	//     await loadFont(fontToLoad, setFontName);
-	//   }
+	// Create an array of font faces for each variant
+	const fontFaces = Object.entries(fontFiles).map(([variant, fontUrl]) => {
+		return (
+			<style
+				key={variant}
+				dangerouslySetInnerHTML={{
+					__html: `
+				@font-face {
+				  font-family: '${fontData.family}';
+				  src: url('${fontUrl}') format('truetype');
+				  font-weight: ${variant === "regular" ? "normal" : variant};
+				  font-style: ${variant.includes("italic") ? "italic" : "normal"};
+				}
+			  `,
+				}}
+			/>
+		);
+	});
 
-	//   initializeFont();
-	// }, []);
+	useEffect(() => {
+		const fontUrl = "/path-to-your-font.woff2"; // Replace with the actual font URL
+		const fontFamily = "YourFontFamily"; // Replace with your font family name
+
+		const fontFaces = `
+		  @font-face {
+			font-family: '${fontFamily}';
+			src: url('${fontUrl}') format('woff2');
+			font-weight: normal;
+			font-style: normal;
+		  }
+		`;
+
+		const style = document.createElement("style");
+		style.innerHTML = fontFaces;
+		document.head.appendChild(style);
+
+		return () => {
+			document.head.removeChild(style);
+		};
+	}, []);
+
 	return (
 		<div>
-			<Helmet>
-				{/* Helmet adds the following to the head tag of index.html, add the neccesary link tag for each google fonts*/}
-				<link
-					href={`https://fonts.googleapis.com/css?family=${fontFamily.fontsList[0]?.family}`}
-					rel="stylesheet"
-				></link>
-			</Helmet>
+			<style>{fontFaces}</style>
+
 			<div className="text-3xl font-bold">
-				The current font is {fontFamily.fontsList[0]?.family}
+				The current font is {fontData.family}
 			</div>
-			<div
-				className="text-3xl "
-				style={{ fontFamily: fontFamily.fontsList[0]?.family }}
-			>
-				Lorem ipsum dolor sit, amet consectetur adipisicing elit. Distinctio
-				magni voluptatibus quasi quo temporibus vero laborum dolores.
-				Repudiandae non labore delectus asperiores, et voluptate laboriosam modi
-				tempore alias commodi recusandae.
-			</div>
-			{fontFamily.fontsList[0]?.variants.map((variant) => (
-				<div key={variant}>{variant}</div>
+			{fontData.variants.map((variant) => (
+				<div
+					key={variant}
+					style={{
+						fontFamily: fontData.family,
+						fontWeight: variant,
+						fontStyle: variant.includes("italic") ? "italic" : "normal",
+						fontSize: "24px",
+					}}
+				>
+					{sampleText}
+				</div>
 			))}
 		</div>
 	);

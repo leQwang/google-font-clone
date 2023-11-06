@@ -3,7 +3,7 @@
 /* @import './base.css'; */
 @import 'tailwindcss/utilities';
 
-*/
+
 *, *::before, *::after {
   box-sizing: border-box;
 }
