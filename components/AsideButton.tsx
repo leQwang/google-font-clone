@@ -4,7 +4,7 @@ function AsideButton(props:any) {
     const { filterSelection, handleSelection, selection, selectionName } = props;
 	return (
 		<button
-			className={`flex w-fit py-2 px-3 rounded-xl mr-2 mb-3 text-sm font-semibold ${
+			className={`flex w-fit py-2 px-3 rounded-xl mr-2 mb-3 text-sm font-semibold items-center ${
 				filterSelection.includes(selection) ? "bg-blue-100" : "bg-[#DBE2EF]"
 			}`}
 			onClick={() => handleSelection(selection)}

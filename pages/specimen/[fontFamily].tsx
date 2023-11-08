@@ -88,6 +88,7 @@ export default function Font(fontFamily: FontItemList) {
 		);
 	});
 
+	//------------------------------- This works somehow but remember "/path-to-your-font.woff2" is not a real path"
 	useEffect(() => {
 		const fontUrl = "/path-to-your-font.woff2"; // Replace with the actual font URL
 		const fontFamily = "YourFontFamily"; // Replace with your font family name

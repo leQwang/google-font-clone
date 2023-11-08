@@ -12,7 +12,9 @@ function FontCard(props: any) {
 	useEffect(() => {
 		if (inView) {
 			const fontLink = document.createElement("link");
-			fontLink.href = `https://fonts.googleapis.com/css?family=${concatAndReplaceSpace(fontItem.family)}`;
+			fontLink.href = `https://fonts.googleapis.com/css?family=${concatAndReplaceSpace(
+				fontItem.family
+			)}`;
 			fontLink.rel = "stylesheet";
 			fontLink.onload = () => setFontLoaded(true);
 			document.head.appendChild(fontLink);
@@ -21,20 +23,21 @@ function FontCard(props: any) {
 				document.head.removeChild(fontLink);
 			};
 		}
+
+
 	}, [inView, fontItem.family]);
-	
-	function concatAndReplaceSpace(inputString:string) {
-		let modifiedString = inputString.replace(/ /g, '%20');
+
+	function concatAndReplaceSpace(inputString: string) {
+		let modifiedString = inputString.replace(/ /g, "%20");
 		return modifiedString;
-	  }
+	}
 
 	return (
 		<div ref={ref}>
 			<Helmet></Helmet>
 			{/* <Link href={`/specimen/${fontItem.family}`}> */}
 			<Link href={`/fonts/${fontItem.family}?size=${fontSize}`}>
-
-				<div className="w-screen h-fit flex flex-col justify-center rounded-md hover:bg-neutral-200 m-5">
+				<div className="w-full h-fit flex flex-col justify-center rounded-md py-3 hover:bg-neutral-200 text-wrap">
 					<div className="w-full flex text-lg">
 						<div className={`font-semibold`}>{fontItem.family}</div>
 					</div>
@@ -45,7 +48,11 @@ function FontCard(props: any) {
 						}}
 						className={fontLoaded ? "loaded-font" : ""}
 					>
-						{sampleText!=="" ? sampleText : "Hello New Font"}
+						<div className="sample-text">
+							{sampleText !== ""
+								? sampleText
+								: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias ex tempora explicabo facilis dolore incidunt animi odit quis sed, aliquam vero, voluptates impedit illo quia veritatis minus libero. Expedita, dolorum."}
+						</div>
 					</div>
 				</div>
 			</Link>

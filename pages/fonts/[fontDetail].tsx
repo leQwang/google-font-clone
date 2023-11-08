@@ -14,16 +14,16 @@ type FontItem = {
 	menu: string;
 };
 
-type FontItemList = {
-	fontsList: FontItem[];
-};
-
 const FontDetail = () => {
 	const router = useRouter();
+	const searchParams = useSearchParams()
+	
 	const { fontDetail, size } = router.query;
+	console.log(size)
+	
 
 	const sampleText = "Hello New Font";
-	const [fontData, setFontData] = useState(null);
+	const [fontData, setFontData] = useState<FontItem|null>(null);
 
 	useEffect(() => {
 		const apiKey = "AIzaSyAE4f_rHRd2uqlo09qtr2f6DXVB1vNIvI4"; // Replace with your actual API key
@@ -38,6 +38,8 @@ const FontDetail = () => {
 				console.error("Error fetching data:", error);
 			});
 	}, [fontDetail]);
+
+
 
 	if (fontData === null) {
 		return null; // Handle the case where fontData is null
@@ -88,12 +90,12 @@ const FontDetail = () => {
 
 	return (
 		<div>
-			{/* <style>{fontFaces}</style>
+			<style>{fontFaces}</style>
 
-			<div className="text-3xl font-bold">
+			<div className={`text-[${size}px] font-bold`}>
 				The current font is {fontData.family}
 			</div>
-			{fontData.variants.map((variant) => (
+			{fontData.variants.map((variant:any) => (
 				<div
 					key={variant}
 					style={{
@@ -105,8 +107,7 @@ const FontDetail = () => {
 				>
 					{sampleText}
 				</div>
-			))} */}
-			{sampleText}
+			))}
 		</div>
 	);
 };

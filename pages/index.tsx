@@ -1,9 +1,10 @@
 import Image from "next/image";
-import React, { useState, useEffect, createContext } from "react";
+import React, { useState, useEffect, createContext, useRef } from "react";
 import GoogleFontIcon from "../public/GoogleFontIcon.png";
 import { useRouter } from "next/router";
 import FontCard from "../components/FontCard";
 import Aside from "../components/Aside";
+import { useSearchParams } from "next/navigation";
 
 // Define type -------------------------------------------------------------------
 export type FontItem = {
@@ -156,6 +157,14 @@ const sortOptions: Record<string, string> = {
 	date: "date",
 };
 
+const deleteParams = (url: string, router: any): string => {
+	const currentURL = router.asPath;
+	console.log(currentURL)
+	const updateURL = new URL(currentURL, "http://localhost:3000");
+	updateURL.searchParams.delete(url);
+	return updateURL.toString();
+};
+
 const apiKey = "AIzaSyAE4f_rHRd2uqlo09qtr2f6DXVB1vNIvI4";
 const baseUrl = "https://www.googleapis.com/webfonts/v1/webfonts";
 
@@ -175,26 +184,32 @@ const getFontDataUrl = (sortOption: string): string => {
 
 export default function Home() {
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const defaultSampleText: string =
+		"Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias ex tempora explicabo facilis dolore incidunt animi odit quis sed, aliquam vero, voluptates impedit illo quia veritatis minus libero. Expedita, dolorum.";
 
 	const [sort, setSort] = useState<string>("");
-	const [fontList, setFontList] = useState<FontItemList | null>(null); // Initialize fontList as null
-	const [fixedFontList, setFixedFontList] = useState<FontItemList | null>(null);
+	const [fontItemList, setFontItemList] = useState<FontItemList | null>(null); // Initialize fontItemList as null
+	const [fixedFontList, setFixedFontList] = useState<any>(null); //can use useRef here
 
 	const [numberOfFonts, setNumberOfFonts] = useState(20); // number of fonts to be displayed, initialise at 20
-	const [atBottom, setAtBottom] = useState(false); // state for if user has scrolled to bottom, used to render more fonts in
-	const [atTop, setAtTop] = useState(true);
+
+	//Font Card
+	const [addFont, setAddFont] = useState([]);
 
 	// Aside hooks
 	const [isFiltered, setIsFiltered] = useState<boolean>(false);
-	const [fontSize, setFontSize] = useState<number>(50);
+	const [fontSize, setFontSize] = useState<number>(40);
 	const [sampleText, setSampleText] = useState<string>(
-		"The quick brown fox jumps over the lazy dog"
+		"Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias ex tempora explicabo facilis dolore incidunt animi odit quis sed, aliquam vero, voluptates impedit illo quia veritatis minus libero. Expedita, dolorum."
 	);
 	const [debouncedSampleText, setDebouncedSampleText] = useState<string>("");
 	const [search, setSearch] = useState<string>("");
 	const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>("");
 	const [language, setLanguage] = useState<string>("");
 	const [filterSelection, setFilterSelection] = useState<string[]>([]);
+
+	// ------------------------------------ Fetch data ----------------------------------------------------
 
 	useEffect(() => {
 		// Fetch data when the component mounts or when the sorting option changes
@@ -203,85 +218,160 @@ export default function Home() {
 		fetch(fontDataUrl)
 			.then((response) => response.json())
 			.then((data) => {
-				setFontList({ fontsList: data.items });
+				setFontItemList({ fontsList: data.items });
 				setFixedFontList({ fontsList: data.items });
+				
 			})
 			.catch((error) => {
 				console.error("Error fetching data:", error);
 			});
 	}, [sort]);
 
+	// ------------------------------------ Page load ----------------------------------------------------
+
+	// ------------------------------------ Filter Query ----------------------------------------------------
+	//https://fonts.google.com/?preview.text=aaaaa&preview.size=79&query=hhhh&stroke=Serif&subset=vietnamese&noto.script=Latn	
 	useEffect(() => {
-		const debounceId = setTimeout(() => {
+		const queryParameters: any = {};
+	  
+		// Check for sampleText and add it to the query parameters
+		if (sampleText !== defaultSampleText && sampleText !== "") {
+		  queryParameters["preview.text"] = sampleText;
+		}
+	  
+		// Check for fontSize and add it to the query parameters
+		if (fontSize != 40) {
+		  queryParameters["preview.size"] = fontSize;
+		}
+
+		if(search !== ""){
+			queryParameters["query"] = search;
+		}
+
+		if(filterSelection.includes("Serif")||filterSelection.includes("Sans+Serif")||filterSelection.includes("Slab+Serif")){
+			if(filterSelection.includes("Serif")){
+				queryParameters["stroke"] = "Serif";
+			}else if(filterSelection.includes("Sans+Serif")){
+				queryParameters["stroke"] = "Sans Serif";
+			}else{
+				queryParameters["stroke"] = "Slab Serif";
+			}
+		}
+
+		if(language !== ""){
+			queryParameters["subset"] = language;
+		}
+
+		console.log("queryParameters", queryParameters)
+
+		// Check if there are any query parameters to update
+		if (Object.keys(queryParameters).length >= 0) {
+			console.log("pushing", queryParameters)
+			router.push({
+				pathname: "http://localhost:3000",
+				query: queryParameters,
+			});
+		} 
+		// Continue working on the deleteParams function here
+		// 		if(sampleText === "") {
+		//   const updatedURL = deleteParams("preview.text", router);
+		//   router.push(updatedURL);
+		// }
+		
+		// if(fontSize == 40){
+		// 	const updatedURL = deleteParams("preview.size", router);
+		// 	router.push(updatedURL);
+		// }
+
+	  }, [filterSelection, sampleText, fontSize, language, sort, search]);
+
+	// ------------------------------------ Language ----------------------------------------------------
+	useEffect(() => {
+		if (fontItemList != null) {
+			const filteredFonts = fixedFontList?.fontsList.filter((fontItem:FontItem) => {
+				return fontItem.subsets.includes(language);
+			});
+			setFontItemList({ fontsList: filteredFonts });
+		}
+		if (language === "") {
+			setFontItemList(fixedFontList);
+		}
+	}, [language]);
+
+	// ------------------------------------ Search ----------------------------------------------------
+
+	useEffect(() => {
+		// const debounceId = setTimeout(() => {
 			setDebouncedSearchTerm(search);
 
-			if (fontList && search != "") {
-				const filteredFonts = fontList?.fontsList.filter((fontItem) =>
-					fontItem.family.includes(search)
+			if (fontItemList != null && search != "") {
+				const filteredFonts = fontItemList?.fontsList.filter((fontItem) =>
+					fontItem.family.toLowerCase().includes(search.toLowerCase())
 				);
-				setFontList({ ...fontList, fontsList: filteredFonts });
+				setFontItemList({ ...fontItemList, fontsList: filteredFonts });
 			} else {
-				setFontList(fixedFontList);
+				setFontItemList(fixedFontList);
 			}
-		}, 1000);
+		// }, 1000);
 
-		return () => {
-			clearTimeout(debounceId);
-		};
-	}, [search, fontList, fixedFontList]);
+		// return () => {
+		// 	clearTimeout(debounceId);
+		// };
+	}, [search, fixedFontList]);
 
-	useEffect(() => {
-		const debounceId = setTimeout(() => {
-			setDebouncedSampleText(sampleText);
-		}, 1000);
+	// ------------------------------------ Sample Text ----------------------------------------------------
 
-		return () => {
-			clearTimeout(debounceId);
-		};
-	}, [sampleText]);
+	// useEffect(() => {
+	// 	const debounceId = setTimeout(() => {
+	// 		setDebouncedSampleText(sampleText);
+	// 	}, 1000);
+
+	// 	return () => {
+	// 		clearTimeout(debounceId);
+	// 	};
+	// }, [sampleText]);
+
+	//---------------------------------Sort----------------------------------------------
 
 	const handleSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const selectedSortOption = e.target.value;
 		setSort(selectedSortOption);
-		if (e.target.value === "") {
-			router.push("");
-		} else {
-			router.push(`/?sort=${selectedSortOption}`);
-		}
+		// if (e.target.value === "") {
+		// 	router.push("");
+		// } else {
+		// 	router.push(`/?sort=${selectedSortOption}`);
+		// }
 	};
 
-	//add event listener to scroll please see handleScroll function
+	// ------------------------------------ Lazy loading scroll----------------------------------------------------
+
+	const [visibleFonts, setVisibleFonts] = useState(numberOfFonts);
+	const cardListRef = useRef<HTMLDivElement | null>(null);
+
 	useEffect(() => {
-		window.addEventListener("scroll", handleScroll);
-		return () => window.removeEventListener("scroll", handleScroll);
-	}, []);
+		function handleScroll() {
+			const cardList = cardListRef.current;
+			if (!cardList) return;
 
-	//change states depending where the user has scrolled to
-	function handleScroll() {
-		if (
-			window.innerHeight + document.documentElement.scrollTop + 2 >=
-			document.documentElement.offsetHeight
-		) {
-			setAtBottom(true);
+			if (
+				cardList.scrollHeight - (cardList.scrollTop + cardList.clientHeight) <=
+				100
+			) {
+				setVisibleFonts((prev) => prev + 20);
+			}
 		}
-		if (window.pageYOffset === 0) {
-			setAtTop(true);
-		} else {
-			setAtTop(false);
+
+		const cardList = cardListRef.current;
+		if (cardList) {
+			cardList.addEventListener("scroll", handleScroll);
 		}
-	}
 
-	//if atBottom is true run increaseNoOfFonts function
-	useEffect(() => {
-		if (!atBottom) return;
-		increaseNoOfFonts();
-	}, [atBottom]);
-
-	//increase the number of fonts and then set atBottom back to false
-	const increaseNoOfFonts = () => {
-		setNumberOfFonts((prevnum) => prevnum + 12);
-		setAtBottom(false);
-	};
+		return () => {
+			if (cardList) {
+				cardList.removeEventListener("scroll", handleScroll);
+			}
+		};
+	}, [visibleFonts]);
 
 	return (
 		<>
@@ -293,11 +383,14 @@ export default function Home() {
 					sampleText={sampleText}
 					setSampleText={setSampleText}
 					language={language}
+					setLanguage={setLanguage}
 					filterSelection={filterSelection}
 					setFilterSelection={setFilterSelection}
+					fontSize={fontSize}
+					setFontSize={setFontSize}
 				/>
 
-				<div className="w-full flex flex-col h-screen  overflow-scroll">
+				<div className="w-full flex flex-col h-screen overflow-hidden transition-all duration-200">
 					{/* --------- Search Bar ---------- */}
 					<div className="relative w-full flex flex-col justify-center flex-grow-1 px-2 sm:px-5 md:px-32 pt-5 bg-white">
 						<div className="w-full h-fit flex">
@@ -307,7 +400,7 @@ export default function Home() {
 							</div>
 
 							<div className="rounded-full px-2 flex flex-grow items-center bg-[#F3F7FC]">
-								<div className="flex flex-grow items-center sm:mx-2 h-full sm:border-r-2">
+								<div className="flex flex-grow items-center sm:mx-2 h-full lg:border-r-2">
 									<div className="mx-2">
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
@@ -368,7 +461,7 @@ export default function Home() {
 						{/* --------- Filter ---------- */}
 						<div className="pt-5 mb-5">
 							<button
-								className={`border-2 rounded-full duration-200 ${
+								className={`border-2 rounded-full duration-300 ${
 									isFiltered ? "button-filter" : "button-filter-close"
 								}`}
 								onClick={() => setIsFiltered(!isFiltered)}
@@ -409,19 +502,36 @@ export default function Home() {
 									Close
 								</div>
 							</button>
+							<div>
+								{fontItemList?.fontsList.length} of{" "}
+								{fixedFontList?.fontsList.length} families
+							</div>
 						</div>
 					</div>
 
 					{/* --------- Font Cards ---------- */}
-					<div className="flex flex-col overflow-x-hidden" id="myCardList">
-						{fontList?.fontsList.map((fontItem: FontItem) => (
-							<FontCard
-								key={fontItem.family}
-								fontItem={fontItem}
-								sampleText={sampleText}
-								fontSize={fontSize}
-							/>
-						))}
+					<div className="flex overflow-hidden lg:ml-24 ">
+						<div
+							className="relative grid grid-cols-1 w-full"
+							id="myCardList"
+							ref={cardListRef}
+							style={{
+								overflowY: "scroll",
+								overflowX: "hidden",
+								maxHeight: "80vh",
+							}}
+						>
+							{fontItemList?.fontsList
+								.slice(0, visibleFonts)
+								.map((fontItem) => (
+									<FontCard
+										key={fontItem.family}
+										fontItem={fontItem}
+										sampleText={sampleText}
+										fontSize={fontSize}
+									/>
+								))}
+						</div>
 					</div>
 				</div>
 			</main>
