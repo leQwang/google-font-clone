@@ -30,125 +30,6 @@ export type FontItemList = {
 export const FontContext = createContext<FontItemList | null>(null);
 
 // Get Static Props API ----------------------------------------------
-// export const getStaticProps: GetStaticProps<FontItemList> = async () => {
-// 	try {
-// 		const res = await fetch(
-// 			"https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyAE4f_rHRd2uqlo09qtr2f6DXVB1vNIvI4"
-// 		);
-
-// 		if (!res.ok) {
-// 			throw new Error(
-// 				`Font data request failed: ${res.status} - ${res.statusText}`
-// 			);
-// 		}
-
-// 		const data = await res.json();
-
-// 		return {
-// 			props: {
-// 				fontsList: data.items,
-// 			},
-// 		};
-// 	} catch (error) {
-// 		console.error("Error in getStaticProps:", error);
-
-// 		return {
-// 			props: {
-// 				fontsList: [],
-// 			},
-// 		};
-// 	}
-// };
-
-// export const getStaticProps: GetStaticProps<FontItem[]> = async () => {
-// 	return {
-// 		props: {
-// 			"items": [
-// 				{
-// 					"family": "ABeeZee",
-// 					"variants": [
-// 						"regular",
-// 						"italic"
-// 					],
-// 					"subsets": [
-// 						"latin",
-// 						"latin-ext"
-// 					],
-// 					"version": "v22",
-// 					"lastModified": "2022-09-22",
-// 					"files": {
-// 						"regular": "http://fonts.gstatic.com/s/abeezee/v22/esDR31xSG-6AGleN6tKukbcHCpE.ttf",
-// 						"italic": "http://fonts.gstatic.com/s/abeezee/v22/esDT31xSG-6AGleN2tCklZUCGpG-GQ.ttf"
-// 					},
-// 					"category": "sans-serif",
-// 					"kind": "webfonts#webfont",
-// 					"menu": "http://fonts.gstatic.com/s/abeezee/v22/esDR31xSG-6AGleN2tOklQ.ttf"
-// 				},
-// 				{
-// 					"family": "ADLaM Display",
-// 					"variants": [
-// 						"regular"
-// 					],
-// 					"subsets": [
-// 						"adlam",
-// 						"latin",
-// 						"latin-ext"
-// 					],
-// 					"version": "v1",
-// 					"lastModified": "2023-08-17",
-// 					"files": {
-// 						"regular": "http://fonts.gstatic.com/s/adlamdisplay/v1/KFOhCnGXkPOLlhx6jD8_b1ZECsHYkYBPY3o.ttf"
-// 					},
-// 					"category": "display",
-// 					"kind": "webfonts#webfont",
-// 					"menu": "http://fonts.gstatic.com/s/adlamdisplay/v1/KFOhCnGXkPOLlhx6jD8_b1ZEOsDSlQ.ttf"
-// 				},
-// 				{
-// 					"family": "AR One Sans",
-// 					"variants": [
-// 						"regular",
-// 						"500",
-// 						"600",
-// 						"700"
-// 					],
-// 					"subsets": [
-// 						"latin",
-// 						"latin-ext",
-// 						"vietnamese"
-// 					],
-// 					"version": "v2",
-// 					"lastModified": "2023-09-27",
-// 					"files": {
-// 						"500": "http://fonts.gstatic.com/s/aronesans/v2/TUZezwhrmbFp0Srr_tH6fv6RcUejHO_u7GF5aXfv-U2QzBLF6gslWk39DW03no5mBF4.ttf",
-// 						"600": "http://fonts.gstatic.com/s/aronesans/v2/TUZezwhrmbFp0Srr_tH6fv6RcUejHO_u7GF5aXfv-U2QzBLF6gslWqH6DW03no5mBF4.ttf",
-// 						"700": "http://fonts.gstatic.com/s/aronesans/v2/TUZezwhrmbFp0Srr_tH6fv6RcUejHO_u7GF5aXfv-U2QzBLF6gslWpj6DW03no5mBF4.ttf",
-// 						"regular": "http://fonts.gstatic.com/s/aronesans/v2/TUZezwhrmbFp0Srr_tH6fv6RcUejHO_u7GF5aXfv-U2QzBLF6gslWn_9DW03no5mBF4.ttf"
-// 					},
-// 					"category": "sans-serif",
-// 					"kind": "webfonts#webfont",
-// 					"menu": "http://fonts.gstatic.com/s/aronesans/v2/TUZezwhrmbFp0Srr_tH6fv6RcUejHO_u7GF5aXfv-U2QzBLF6gslWn_9PWw9mg.ttf"
-// 				},
-// 				{
-// 					"family": "Abel",
-// 					"variants": [
-// 						"regular"
-// 					],
-// 					"subsets": [
-// 						"latin"
-// 					],
-// 					"version": "v18",
-// 					"lastModified": "2022-09-22",
-// 					"files": {
-// 						"regular": "http://fonts.gstatic.com/s/abel/v18/MwQ5bhbm2POE6VhLPJp6qGI.ttf"
-// 					},
-// 					"category": "sans-serif",
-// 					"kind": "webfonts#webfont",
-// 					"menu": "http://fonts.gstatic.com/s/abel/v18/MwQ5bhbm2POE2VlBOA.ttf"
-// 				}
-// 			]
-// 		}
-// 	}
-// };
 
 // fetch new data from sort----------------------------------------------------
 
@@ -161,7 +42,7 @@ const sortOptions: Record<string, string> = {
 
 const deleteParams = (url: string, router: any): string => {
 	const currentURL = router.asPath;
-	console.log(currentURL)
+	console.log(currentURL);
 	const updateURL = new URL(currentURL, "http://localhost:3000");
 	updateURL.searchParams.delete(url);
 	return updateURL.toString();
@@ -213,21 +94,21 @@ export default function Home() {
 	const [filterSelection, setFilterSelection] = useState<string[]>([]);
 
 	// ------------------------------------ Load Page ----------------------------------------------------
-	function getQueryParamValue(url:string, paramName:string) {
-		const queryString = url.split('?')[1];
-		
+	function getQueryParamValue(url: string, paramName: string) {
+		const queryString = url.split("?")[1];
+
 		if (queryString) {
-		  const params = new URLSearchParams(queryString);
-		  
-		  if (params.has(paramName)) {
-			return params.get(paramName);
-		  }
+			const params = new URLSearchParams(queryString);
+
+			if (params.has(paramName)) {
+				return params.get(paramName);
+			}
 		}
-	  
+
 		return null;
-	  }
+	}
 	useEffect(() => {
-		console.log("routerPath", routerPath)
+		console.log("routerPath", routerPath);
 
 		const previewTextValue = getQueryParamValue(routerPath, "preview.text");
 		const previewSizeValue = getQueryParamValue(routerPath, "preview.size");
@@ -235,7 +116,7 @@ export default function Home() {
 		const strokeValue = getQueryParamValue(routerPath, "stroke");
 		const subsetValue = getQueryParamValue(routerPath, "subset");
 		const sortValue = getQueryParamValue(routerPath, "sort");
-		
+
 		// console.log("preview.text:", previewTextValue);
 		// console.log("preview.size:", previewSizeValue);
 		// console.log("query:", queryValue);
@@ -243,25 +124,26 @@ export default function Home() {
 		// console.log("subset:", subsetValue);
 		// console.log("sort:", sortValue);
 
-		if(previewTextValue){
+		if (previewTextValue) {
 			setSampleText(previewTextValue);
 		}
-		if(previewSizeValue){
+		if (previewSizeValue) {
 			setFontSize(parseInt(previewSizeValue));
 		}
-		if(queryValue){
+		if (queryValue) {
 			setSearch(queryValue);
 		}
-		if(strokeValue){
+		if (strokeValue) {
 			setFilterSelection([strokeValue]);
 		}
-		if(subsetValue){
+		if (subsetValue) {
 			setLanguage(subsetValue);
 		}
-		if(sortValue){
+		if (sortValue) {
 			setSort(sortValue);
 		}
 
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	// ------------------------------------ Fetch data ----------------------------------------------------
@@ -275,7 +157,6 @@ export default function Home() {
 			.then((data) => {
 				setFontItemList({ fontsList: data.items });
 				setFixedFontList({ fontsList: data.items });
-				
 			})
 			.catch((error) => {
 				console.error("Error fetching data:", error);
@@ -286,113 +167,125 @@ export default function Home() {
 	//https://fonts.google.com/?preview.text=aaaaa&preview.size=79&query=hhhh&stroke=Serif&subset=vietnamese&sort=popularity
 	useEffect(() => {
 		const queryParameters: any = {};
-	  
+
 		// Check for sampleText and add it to the query parameters
 		if (sampleText !== defaultSampleText && sampleText !== "") {
-		  queryParameters["preview.text"] = sampleText;
-		}
-	  
-		// Check for fontSize and add it to the query parameters
-		if (fontSize != 40) {
-		  queryParameters["preview.size"] = fontSize;
+			queryParameters["preview.text"] = sampleText;
 		}
 
-		if(search !== ""){
+		// Check for fontSize and add it to the query parameters
+		if (fontSize != 40) {
+			queryParameters["preview.size"] = fontSize;
+		}
+
+		if (search !== "") {
 			queryParameters["query"] = search;
 		}
 
-		if(filterSelection.includes("Serif")||filterSelection.includes("Sans+Serif")||filterSelection.includes("Slab+Serif")){
-			if(filterSelection.includes("Serif")){
+		if (
+			filterSelection.includes("Serif") ||
+			filterSelection.includes("Sans+Serif") ||
+			filterSelection.includes("Slab+Serif")
+		) {
+			if (filterSelection.includes("Serif")) {
 				queryParameters["stroke"] = "Serif";
-			}else if(filterSelection.includes("Sans+Serif")){
+			} else if (filterSelection.includes("Sans+Serif")) {
 				queryParameters["stroke"] = "Sans Serif";
-			}else{
+			} else {
 				queryParameters["stroke"] = "Slab Serif";
 			}
 		}
 
-		if(language !== ""){
+		if (language !== "") {
 			queryParameters["subset"] = language;
 		}
 
-		if(sort !== ""){
+		if (sort !== "") {
 			queryParameters["sort"] = sort;
 		}
 
 		if (Object.keys(queryParameters).length >= 0) {
-			console.log("pushing", queryParameters)
+			console.log("pushing", queryParameters);
 			router.push({
 				// pathname: "http://localhost:3000",
 				query: queryParameters,
 			});
-		} 
-
-	  }, [filterSelection, sampleText, fontSize, language, sort, search]);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [filterSelection, sampleText, fontSize, language, sort, search]);
 
 	// ------------------------------------ Language ----------------------------------------------------
 	useEffect(() => {
 		if (fontItemList != null) {
-			const filteredFonts = fixedFontList?.fontsList.filter((fontItem:FontItem) => {
-				return fontItem.subsets.includes(language);
-			});
+			const filteredFonts = fixedFontList?.fontsList.filter(
+				(fontItem: FontItem) => {
+					return fontItem.subsets.includes(language);
+				}
+			);
 			setFontItemList({ fontsList: filteredFonts });
 		}
 		if (language === "") {
 			setFontItemList(fixedFontList);
 		}
-	}, [language]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [language, fixedFontList]);
 
 	// ------------------------------------ Categories ----------------------------------------------------
 	useEffect(() => {
 		let tempStroke = "";
 		// if(filterSelection.includes("Serif")||filterSelection.includes("Sans+Serif")||filterSelection.includes("Slab+Serif")){
-			if(filterSelection.includes("Serif")){
-				tempStroke = "serif";
-			}else if(filterSelection.includes("Sans+Serif")){
-				tempStroke = "sans-serif";
-			}else if(filterSelection.includes("Slab+Serif")){
-				tempStroke = "slab-serif"; //for some reason the catery don't have slabs-serif
-			}
-			
-			// if(filterSelection.includes("Display")){
-			// 	tempStroke = "display";
-			// }
-			// if(filterSelection.includes("Handwriting")){
-			// 	tempStroke = "handwriting";
-			// }
-			// if(filterSelection.includes("Monospace")){
-			// 	tempStroke = "monospace";
-			// }
+		if (filterSelection.includes("Serif")) {
+			tempStroke = "serif";
+		} else if (filterSelection.includes("Sans+Serif")) {
+			tempStroke = "sans-serif";
+		} else if (filterSelection.includes("Slab+Serif")) {
+			tempStroke = "slab-serif"; //for some reason the catery don't have slabs-serif
+		}
+
+		// if(filterSelection.includes("Display")){
+		// 	tempStroke = "display";
+		// }
+		// if(filterSelection.includes("Handwriting")){
+		// 	tempStroke = "handwriting";
+		// }
+		// if(filterSelection.includes("Monospace")){
+		// 	tempStroke = "monospace";
+		// }
 
 		// }
 		if (fontItemList != null) {
-			const filteredFonts = fixedFontList?.fontsList.filter((fontItem:FontItem) => {
-				return fontItem.category == tempStroke;
-			});
+			const filteredFonts = fixedFontList?.fontsList.filter(
+				(fontItem: FontItem) => {
+					return fontItem.category == tempStroke;
+				}
+			);
 			setFontItemList({ fontsList: filteredFonts });
 		}
-	}, [filterSelection]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [filterSelection, fixedFontList]);
 
 	// ------------------------------------ Search ----------------------------------------------------
 
 	useEffect(() => {
 		// const debounceId = setTimeout(() => {
-			redirect("http://localhost:3000/")
-			setDebouncedSearchTerm(search);
+		redirect("http://localhost:3000/");
+		setDebouncedSearchTerm(search);
 
-			if (fontItemList != null && search != "") {
-				const filteredFonts = fontItemList?.fontsList.filter((fontItem) =>
-					fontItem.family.toLowerCase().includes(search.toLowerCase())
-				);
-				setFontItemList({ ...fontItemList, fontsList: filteredFonts });
-			} else {
-				setFontItemList(fixedFontList);
-			}
+		if (fontItemList != null && search != "") {
+			const filteredFonts = fontItemList?.fontsList.filter((fontItem) =>
+				fontItem.family.toLowerCase().includes(search.toLowerCase())
+			);
+			setFontItemList({ ...fontItemList, fontsList: filteredFonts });
+		} else {
+			setFontItemList(fixedFontList);
+		}
 		// }, 1000);
 
 		// return () => {
 		// 	clearTimeout(debounceId);
 		// };
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [search, fixedFontList]);
 
 	// ------------------------------------ Sample Text ----------------------------------------------------
@@ -470,9 +363,10 @@ export default function Home() {
 					<div className="relative w-full flex flex-col justify-center flex-grow-1 px-2 sm:px-5 md:px-32 pt-5 bg-white">
 						{/* --------- Search Bar ---------- */}
 						<SearchBar
-						sort = {sort}
-						setSearch = {setSearch}
-						handleSort = {handleSort} />
+							sort={sort}
+							setSearch={setSearch}
+							handleSort={handleSort}
+						/>
 
 						{/* --------- Filter ---------- */}
 						<div className="pt-5 mb-5">
