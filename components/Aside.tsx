@@ -198,7 +198,6 @@ function Aside(props: any) {
 									value={sliderValue}
 									onChange={handleSliderChange} // Use the onChange event handler
 								/>
-								<p></p>
 							</div>
 						</div>
 					</div>

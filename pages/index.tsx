@@ -1,10 +1,12 @@
 import Image from "next/image";
-import React, { useState, useEffect, createContext, useRef } from "react";
+import React, { useState, useEffect, createContext, useRef, use } from "react";
 import GoogleFontIcon from "../public/GoogleFontIcon.png";
 import { useRouter } from "next/router";
 import FontCard from "../components/FontCard";
 import Aside from "../components/Aside";
 import { useSearchParams } from "next/navigation";
+import SearchBar from "@/components/SearchBar";
+import { redirect } from "react-router-dom";
 
 // Define type -------------------------------------------------------------------
 export type FontItem = {
@@ -184,6 +186,7 @@ const getFontDataUrl = (sortOption: string): string => {
 
 export default function Home() {
 	const router = useRouter();
+	const routerPath = router.asPath;
 	const searchParams = useSearchParams();
 	const defaultSampleText: string =
 		"Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias ex tempora explicabo facilis dolore incidunt animi odit quis sed, aliquam vero, voluptates impedit illo quia veritatis minus libero. Expedita, dolorum.";
@@ -209,6 +212,58 @@ export default function Home() {
 	const [language, setLanguage] = useState<string>("");
 	const [filterSelection, setFilterSelection] = useState<string[]>([]);
 
+	// ------------------------------------ Load Page ----------------------------------------------------
+	function getQueryParamValue(url:string, paramName:string) {
+		const queryString = url.split('?')[1];
+		
+		if (queryString) {
+		  const params = new URLSearchParams(queryString);
+		  
+		  if (params.has(paramName)) {
+			return params.get(paramName);
+		  }
+		}
+	  
+		return null;
+	  }
+	useEffect(() => {
+		console.log("routerPath", routerPath)
+
+		const previewTextValue = getQueryParamValue(routerPath, "preview.text");
+		const previewSizeValue = getQueryParamValue(routerPath, "preview.size");
+		const queryValue = getQueryParamValue(routerPath, "query");
+		const strokeValue = getQueryParamValue(routerPath, "stroke");
+		const subsetValue = getQueryParamValue(routerPath, "subset");
+		const sortValue = getQueryParamValue(routerPath, "sort");
+		
+		// console.log("preview.text:", previewTextValue);
+		// console.log("preview.size:", previewSizeValue);
+		// console.log("query:", queryValue);
+		// console.log("stroke:", strokeValue);
+		// console.log("subset:", subsetValue);
+		// console.log("sort:", sortValue);
+
+		if(previewTextValue){
+			setSampleText(previewTextValue);
+		}
+		if(previewSizeValue){
+			setFontSize(parseInt(previewSizeValue));
+		}
+		if(queryValue){
+			setSearch(queryValue);
+		}
+		if(strokeValue){
+			setFilterSelection([strokeValue]);
+		}
+		if(subsetValue){
+			setLanguage(subsetValue);
+		}
+		if(sortValue){
+			setSort(sortValue);
+		}
+
+	}, []);
+
 	// ------------------------------------ Fetch data ----------------------------------------------------
 
 	useEffect(() => {
@@ -227,10 +282,8 @@ export default function Home() {
 			});
 	}, [sort]);
 
-	// ------------------------------------ Page load ----------------------------------------------------
-
 	// ------------------------------------ Filter Query ----------------------------------------------------
-	//https://fonts.google.com/?preview.text=aaaaa&preview.size=79&query=hhhh&stroke=Serif&subset=vietnamese&noto.script=Latn	
+	//https://fonts.google.com/?preview.text=aaaaa&preview.size=79&query=hhhh&stroke=Serif&subset=vietnamese&sort=popularity
 	useEffect(() => {
 		const queryParameters: any = {};
 	  
@@ -262,26 +315,17 @@ export default function Home() {
 			queryParameters["subset"] = language;
 		}
 
-		console.log("queryParameters", queryParameters)
+		if(sort !== ""){
+			queryParameters["sort"] = sort;
+		}
 
-		// Check if there are any query parameters to update
 		if (Object.keys(queryParameters).length >= 0) {
 			console.log("pushing", queryParameters)
 			router.push({
-				pathname: "http://localhost:3000",
+				// pathname: "http://localhost:3000",
 				query: queryParameters,
 			});
 		} 
-		// Continue working on the deleteParams function here
-		// 		if(sampleText === "") {
-		//   const updatedURL = deleteParams("preview.text", router);
-		//   router.push(updatedURL);
-		// }
-		
-		// if(fontSize == 40){
-		// 	const updatedURL = deleteParams("preview.size", router);
-		// 	router.push(updatedURL);
-		// }
 
 	  }, [filterSelection, sampleText, fontSize, language, sort, search]);
 
@@ -298,10 +342,42 @@ export default function Home() {
 		}
 	}, [language]);
 
+	// ------------------------------------ Categories ----------------------------------------------------
+	useEffect(() => {
+		let tempStroke = "";
+		// if(filterSelection.includes("Serif")||filterSelection.includes("Sans+Serif")||filterSelection.includes("Slab+Serif")){
+			if(filterSelection.includes("Serif")){
+				tempStroke = "serif";
+			}else if(filterSelection.includes("Sans+Serif")){
+				tempStroke = "sans-serif";
+			}else if(filterSelection.includes("Slab+Serif")){
+				tempStroke = "slab-serif"; //for some reason the catery don't have slabs-serif
+			}
+			
+			// if(filterSelection.includes("Display")){
+			// 	tempStroke = "display";
+			// }
+			// if(filterSelection.includes("Handwriting")){
+			// 	tempStroke = "handwriting";
+			// }
+			// if(filterSelection.includes("Monospace")){
+			// 	tempStroke = "monospace";
+			// }
+
+		// }
+		if (fontItemList != null) {
+			const filteredFonts = fixedFontList?.fontsList.filter((fontItem:FontItem) => {
+				return fontItem.category == tempStroke;
+			});
+			setFontItemList({ fontsList: filteredFonts });
+		}
+	}, [filterSelection]);
+
 	// ------------------------------------ Search ----------------------------------------------------
 
 	useEffect(() => {
 		// const debounceId = setTimeout(() => {
+			redirect("http://localhost:3000/")
 			setDebouncedSearchTerm(search);
 
 			if (fontItemList != null && search != "") {
@@ -391,72 +467,12 @@ export default function Home() {
 				/>
 
 				<div className="w-full flex flex-col h-screen overflow-hidden transition-all duration-200">
-					{/* --------- Search Bar ---------- */}
 					<div className="relative w-full flex flex-col justify-center flex-grow-1 px-2 sm:px-5 md:px-32 pt-5 bg-white">
-						<div className="w-full h-fit flex">
-							<div className="flex basis-28 sm:basis-auto items-center justify-center mr-2 sm:mr-5">
-								<Image src={GoogleFontIcon} alt="google icon" />
-								<div className="hidden lg:block text-2xl">Google Font</div>
-							</div>
-
-							<div className="rounded-full px-2 flex flex-grow items-center bg-[#F3F7FC]">
-								<div className="flex flex-grow items-center sm:mx-2 h-full lg:border-r-2">
-									<div className="mx-2">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											fill="none"
-											viewBox="0 0 24 24"
-											strokeWidth={1.5}
-											stroke="currentColor"
-											className="w-6 h-6"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-											/>
-										</svg>
-									</div>
-									<input
-										className="w-[50%] sm:flex-grow bg-[#F3F7FC] outline-none h-full rounded-xl"
-										type="text"
-										placeholder="Search Font"
-										onChange={(e) => setSearch(e.target.value)}
-									/>
-								</div>
-
-								<div className="relative hidden lg:flex flex-l-2 items-center rounded-md hover:bg-slate-300 p-1">
-									Sort by:
-									<select
-										className="bg-transparent outline-none"
-										value={sort}
-										onChange={handleSort}
-									>
-										<option value="">Trending</option>
-										<option value="popularity">Most Popular</option>
-										<option value="date">Newest</option>
-										<option value="alpha">Name</option>
-									</select>
-								</div>
-							</div>
-
-							<div className="flex items-center justify-center ml-2 sm:ml-5">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24"
-									strokeWidth={1.5}
-									stroke="currentColor"
-									className="w-6 h-6"
-								>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
-									/>
-								</svg>
-							</div>
-						</div>
+						{/* --------- Search Bar ---------- */}
+						<SearchBar
+						sort = {sort}
+						setSearch = {setSearch}
+						handleSort = {handleSort} />
 
 						{/* --------- Filter ---------- */}
 						<div className="pt-5 mb-5">

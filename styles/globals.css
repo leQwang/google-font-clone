@@ -1,6 +1,5 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
-/* @import './base.css'; */
 @import 'tailwindcss/utilities';
 
 
@@ -46,4 +45,57 @@ p, h1, h2, h3, h4, h5, h6 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow:ellipsis;
+}
+
+.previewText[type="text"] {
+  box-sizing: border-box;
+  height: calc(3em + 1px);
+  margin: 0 0 1em;
+  padding: 1em;
+  border: 2px solid #ccc;
+  resize: none;
+  outline: none;
+  border-radius: 50px;
+}
+
+.previewText[type="text"][required]:focus {
+  border-color: #0047fa;
+}
+
+.previewTextClick[type="text"][required] + label[placeholder]:before {
+  transition-duration: .2s;
+  transform: translate(0, -1.5em) scale(0.9, 0.9);
+}
+
+.previewTextNone[type="text"][required]:focus + label[placeholder]:before {
+  transition-duration: .2s;
+  transform: none;
+}
+
+/* .previewText[type="text"][required]:focus + label[placeholder]:before {
+  transition-duration: .2s;
+  transform: translate(0, -1.5em) scale(0.9, 0.9);
+} */
+
+.previewText[type="text"][required] + label[placeholder] {
+  display: block;
+  pointer-events: none;
+  line-height: 1em;
+  margin-top: calc(-3em - 2px);
+  margin-bottom: calc((3em - 2em) + 2px);
+}
+
+.previewText[type="text"][required] + label[placeholder]:before {
+  content: attr(placeholder);
+  display: inline-block;
+  margin: 0 calc(1em + 4px);
+  padding: 0 2px;
+  color: #898989;
+  white-space: nowrap;
+  transition: 0.3s ease-in-out;
+  background: white;
+  background-image: linear-gradient(to bottom, #fff, #fff);
+  background-size: 100% 5px;
+  background-repeat: no-repeat;
+  background-position: center;
 }

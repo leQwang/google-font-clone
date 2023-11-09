@@ -32,11 +32,13 @@ function FontCard(props: any) {
 		return modifiedString;
 	}
 
+	const fontSizeURL = fontSize != 40 ? `?size=${fontSize}` : "";
+
 	return (
 		<div ref={ref}>
 			<Helmet></Helmet>
 			{/* <Link href={`/specimen/${fontItem.family}`}> */}
-			<Link href={`/fonts/${fontItem.family}?size=${fontSize}`}>
+			<Link href={`/fonts/${fontItem.family}${fontSizeURL}`}>
 				<div className="w-full h-fit flex flex-col justify-center rounded-md py-3 hover:bg-neutral-200 text-wrap">
 					<div className="w-full flex text-lg">
 						<div className={`font-semibold`}>{fontItem.family}</div>
