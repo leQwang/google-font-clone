@@ -253,7 +253,7 @@ export default function Home() {
 		// }
 
 		// }
-		if (fontItemList != null) {
+		if (tempStroke != "") {
 			const filteredFonts = fixedFontList?.fontsList.filter(
 				(fontItem: FontItem) => {
 					return fontItem.category == tempStroke;
@@ -262,7 +262,7 @@ export default function Home() {
 			setFontItemList({ fontsList: filteredFonts });
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [filterSelection, fixedFontList]);
+	}, [filterSelection]);
 
 	// ------------------------------------ Search ----------------------------------------------------
 
