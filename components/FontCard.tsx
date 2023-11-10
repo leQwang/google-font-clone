@@ -50,7 +50,7 @@ function FontCard(props: any) {
 						}}
 						className={fontLoaded ? "loaded-font" : ""}
 					>
-						<div className="sample-text">
+						<div className="sample-text pl-3">
 							{sampleText !== ""
 								? sampleText
 								: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias ex tempora explicabo facilis dolore incidunt animi odit quis sed, aliquam vero, voluptates impedit illo quia veritatis minus libero. Expedita, dolorum."}

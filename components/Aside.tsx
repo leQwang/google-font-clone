@@ -13,12 +13,15 @@ function Aside(props: any) {
 		setFilterSelection,
 		fontSize,
 		setFontSize,
+		fixedFontList
 	} = props;
 
 	const [openLanguage, setOpenLanguage] = useState<boolean>(true);
 	const [openStroke, setOpenStroke] = useState<boolean>(true);
 	const [openTechnology, setOpenTechnology] = useState<boolean>(true);
 	const [openClassification, setOpenClassification] = useState<boolean>(true);
+	const LanguageRef = useRef<HTMLSelectElement>(null);
+	const SampleTextRef = useRef<HTMLInputElement>(null);
 
 	const [sliderValue, setSliderValue] = useState(fontSize);
 	const fontSizeList = [8, 12, 14, 20, 24, 32, 40, 64, 96, 120, 184, 280];
@@ -102,10 +105,25 @@ function Aside(props: any) {
 		{ value: "vietnamese", name: "Vietnamese" },
 	];
 
-	const handler = (event: any) => {
+	const handleSlider = (event: any) => {
 		const value = event.target.value;
 		setLanguage(value);
 	};
+
+	const handleReset = () => {
+		setFilterSelection([]);
+		setLanguage("");
+		setFontSize(40);
+		setSampleText("");
+		if (SampleTextRef.current) {
+			SampleTextRef.current.value = "";
+		}
+		if (LanguageRef.current) {
+			LanguageRef.current.value = "";
+		}
+
+	};
+
 
 	return (
 		<div>
@@ -119,7 +137,8 @@ function Aside(props: any) {
 				{/* Sample Text------------------------------------------------------- */}
 
 				<div className="flex flex-row justify-end p-2">
-					<div className="flex mr-3 hover:bg-blue-100 text-blue-500 fill-blue-500 justify-between p-1 rounded-md">
+					<div className="flex mr-3 hover:bg-blue-100 text-blue-500 fill-blue-500 justify-between p-1 rounded-md"
+					onClick={handleReset}>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
@@ -168,10 +187,11 @@ function Aside(props: any) {
 							type="textbox"
 							placeholder="Type something"
 							onChange={(e) => setSampleText(e.target.value)}
+							ref={SampleTextRef}
 						/>
 						<div className="flex w-[90%]">
 							<select
-								className="flex-grow overflow-y-scroll bg-[#DBE2EF]"
+								className="flex-grow overflow-y-scroll bg-[#DBE2EF] mr-4"
 								defaultValue="40"
 								value={fontSize}
 								name="fontSizeSelect"
@@ -196,7 +216,7 @@ function Aside(props: any) {
 									min="12"
 									max="300"
 									value={sliderValue}
-									onChange={handleSliderChange} // Use the onChange event handler
+									onChange={handleSliderChange} // Use the onChange event handleSlider
 								/>
 							</div>
 						</div>
@@ -263,7 +283,8 @@ function Aside(props: any) {
 									className="flex-grow bg-[#DBE2EF]"
 									name="languageSelection"
 									id="languageSelection"
-									onChange={handler}
+									onChange={handleSlider}
+									ref={LanguageRef}
 								>
 									{languageList.map((language) => (
 										<option key={language.value} value={language.value}>

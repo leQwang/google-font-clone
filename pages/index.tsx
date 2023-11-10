@@ -74,6 +74,7 @@ export default function Home() {
 
 	const [sort, setSort] = useState<string>("");
 	const [fontItemList, setFontItemList] = useState<FontItemList | null>(null); // Initialize fontItemList as null
+	const [languageFontList, setLanguageFontList] = useState<any>(null); // Initialize fontItemList as null
 	const [fixedFontList, setFixedFontList] = useState<any>(null); //can use useRef here
 
 	const [numberOfFonts, setNumberOfFonts] = useState(20); // number of fonts to be displayed, initialise at 20
@@ -87,9 +88,7 @@ export default function Home() {
 	const [sampleText, setSampleText] = useState<string>(
 		"Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias ex tempora explicabo facilis dolore incidunt animi odit quis sed, aliquam vero, voluptates impedit illo quia veritatis minus libero. Expedita, dolorum."
 	);
-	const [debouncedSampleText, setDebouncedSampleText] = useState<string>("");
 	const [search, setSearch] = useState<string>("");
-	const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>("");
 	const [language, setLanguage] = useState<string>("");
 	const [filterSelection, setFilterSelection] = useState<string[]>([]);
 
@@ -207,7 +206,6 @@ export default function Home() {
 		if (Object.keys(queryParameters).length >= 0) {
 			console.log("pushing", queryParameters);
 			router.push({
-				// pathname: "http://localhost:3000",
 				query: queryParameters,
 			});
 		}
@@ -215,7 +213,7 @@ export default function Home() {
 	}, [filterSelection, sampleText, fontSize, language, sort, search]);
 
 	// ------------------------------------ Language ----------------------------------------------------
-	useEffect(() => {
+	const languageOptions = (language: string) => {
 		if (fontItemList != null) {
 			const filteredFonts = fixedFontList?.fontsList.filter(
 				(fontItem: FontItem) => {
@@ -223,10 +221,14 @@ export default function Home() {
 				}
 			);
 			setFontItemList({ fontsList: filteredFonts });
+			setLanguageFontList({ fontsList: filteredFonts });
 		}
 		if (language === "") {
 			setFontItemList(fixedFontList);
 		}
+	}
+	useEffect(() => {
+		languageOptions(language)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [language, fixedFontList]);
 
@@ -252,64 +254,43 @@ export default function Home() {
 		// 	tempStroke = "monospace";
 		// }
 
-		// }
 		if (tempStroke != "") {
-			const filteredFonts = fixedFontList?.fontsList.filter(
+			const filteredFonts = languageFontList?.fontsList.filter(
 				(fontItem: FontItem) => {
 					return fontItem.category == tempStroke;
 				}
 			);
 			setFontItemList({ fontsList: filteredFonts });
+		}else{
+			languageOptions(language);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [filterSelection]);
 
 	// ------------------------------------ Search ----------------------------------------------------
 
 	useEffect(() => {
-		// const debounceId = setTimeout(() => {
-		redirect("http://localhost:3000/");
-		setDebouncedSearchTerm(search);
-
+		// redirect("http://localhost:3000/");
 		if (fontItemList != null && search != "") {
 			const filteredFonts = fontItemList?.fontsList.filter((fontItem) =>
 				fontItem.family.toLowerCase().includes(search.toLowerCase())
 			);
 			setFontItemList({ ...fontItemList, fontsList: filteredFonts });
-		} else {
+		} else if(language == "") {
 			setFontItemList(fixedFontList);
+		}else{
+			languageOptions(language);
 		}
-		// }, 1000);
-
-		// return () => {
-		// 	clearTimeout(debounceId);
-		// };
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [search, fixedFontList]);
 
 	// ------------------------------------ Sample Text ----------------------------------------------------
 
-	// useEffect(() => {
-	// 	const debounceId = setTimeout(() => {
-	// 		setDebouncedSampleText(sampleText);
-	// 	}, 1000);
-
-	// 	return () => {
-	// 		clearTimeout(debounceId);
-	// 	};
-	// }, [sampleText]);
-
 	//---------------------------------Sort----------------------------------------------
 
 	const handleSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const selectedSortOption = e.target.value;
 		setSort(selectedSortOption);
-		// if (e.target.value === "") {
-		// 	router.push("");
-		// } else {
-		// 	router.push(`/?sort=${selectedSortOption}`);
-		// }
 	};
 
 	// ------------------------------------ Lazy loading scroll----------------------------------------------------
@@ -357,6 +338,8 @@ export default function Home() {
 					setFilterSelection={setFilterSelection}
 					fontSize={fontSize}
 					setFontSize={setFontSize}
+					fixedFontList={fixedFontList}
+					setFixedFontList={setFixedFontList}
 				/>
 
 				<div className="w-full flex flex-col h-screen overflow-hidden transition-all duration-200">
