@@ -151,6 +151,7 @@ const FontDetail = (props: any) => {
 						<input
 							required
 							type="text"
+							placeholder="Type to preview"
 							className={`previewText w-full ${
 								sampleText != "" && sampleText != defaultSampleText
 									? "previewTextClick"
@@ -158,7 +159,6 @@ const FontDetail = (props: any) => {
 							} `}
 							onChange={handleSampleText}
 						/>
-						<label placeholder="Type here to preview"></label>
 					</form>
 					<div className="flex md:w-[30%]">
 						<select
