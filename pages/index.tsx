@@ -6,7 +6,6 @@ import FontCard from "../components/FontCard";
 import Aside from "../components/Aside";
 import { useSearchParams } from "next/navigation";
 import SearchBar from "@/components/SearchBar";
-import { redirect } from "react-router-dom";
 
 // Define type -------------------------------------------------------------------
 export type FontItem = {

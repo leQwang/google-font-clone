@@ -296,9 +296,18 @@ function Aside(props: any) {
 						</div>
 					</div>
 
+				</div>
+
+			</div>
+		</div>
+	);
+}
+
+export default Aside;
+
 					{/* Technology---------------------------------------------------- */}
 
-					<div className="flex flex-col items-center mb-8">
+					{/*<div className="flex flex-col items-center mb-8">
 						<div className="flex flex-col w-[90%]">
 							<div
 								onClick={() => setOpenTechnology((n: any) => !n)}
@@ -366,11 +375,11 @@ function Aside(props: any) {
 								</div>
 							</div>
 						</div>
-					</div>
+					</div>*/}
 
 					{/* Decorative Stroke------------------------------------------- */}
 
-					<div className="flex flex-col items-center mb-8">
+					{/*<div className="flex flex-col items-center mb-8">
 						<div className="flex flex-col w-[90%]">
 							<div
 								onClick={() => setOpenStroke((n: any) => !n)}
@@ -450,11 +459,11 @@ function Aside(props: any) {
 								</div>
 							</div>
 						</div>
-					</div>
+					</div>*/}
 
 					{/* Classification------------------------------------------- */}
 
-					<div className="flex flex-col items-center mb-8">
+					{/*<div className="flex flex-col items-center mb-8">
 						<div className="flex flex-col w-[90%]">
 							<div
 								onClick={() => setOpenClassification((n: any) => !n)}
@@ -535,13 +544,6 @@ function Aside(props: any) {
 							</div>
 						</div>
 					</div>
-				</div>
+				</div>*/}
 
-				<div></div>
-			</div>
-			{/* )} */}
-		</div>
-	);
-}
 
-export default Aside;
